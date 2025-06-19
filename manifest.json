@@ -1,0 +1,21 @@
+{
+    "name": "ThoughtFlow",
+    "short_name": "ThoughtFlow",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#f8f9fc",
+    "theme_color": "#c084fc",
+    "icons": [
+      {
+        "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MiA3MiI+PGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTAgNTEuNjFIMTcuNSIvPjxwYXRoIGQ9Ik0wIDUzLjE1aDE3LjUiLz48cGF0aCBkPSJNMCAxOC4zOUgxNy41Ii8+PHBhdGggZD0iTTAgMTYuODVoMTcuNSIvPjxwYXRoIGQ9Ik0zNiAwVjE3LjUiLz48cGF0aCBkPSJNMzYgNzJWMzQuNSIvPjxwYXRoIGQ9Ik01NC41IDBoMTcuNSIvPjxwYXRoIGQ9Ik01NC41IDdoMTcuNSIvPjxwYXRoIGQ9Ik01NC41IDU2aDE3LjUiLz48cGF0aCBkPSJNNTUuNTYgNDIuMjNsNC45OSA1LjIyIDIuODUtMi44NiAzLjAzIDMuMTcgMS44OC0yLjUyMiAyLjggMi42MSAyLjUyLTQuNjEtMi41OS0yLjQ1Mi0zLjM1MiAxLjktMi40MjIgMy40Mi0yLjQxLTIuMzkyLTIuMTc0LS42MDUtMi42NyAyLjA3Ii8+PHBhdGggZD0iTTM2IDBoMTciLz48cGF0aCBkPSJNMzYgMTBoMTciLz48cGF0aCBkPSJNMzYgMzdoMTciLz48cGF0aCBkPSJNMzYgNDdoMTciLz48L2c+PC9zdmc+",
+        "sizes": "192x192",
+        "type": "image/svg+xml"
+      },
+      {
+        "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MiA3MiI+PGcgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTAgNTEuNjFIMTcuNSIvPjxwYXRoIGQ9Ik0wIDUzLjE1aDE3LjVSIi8+PHBhdGggZD0iTTAgMTguMzlIMTcuNSIvPjxwYXRoIGQ9Ik0wIDE2Ljg1aDE3LjVSIi8+PHBhdGggZD0iTTM2IDBWMTcuNSIvPjxwYXRoIGQ9Ik0zNiA3MlYzNC41Ii8+PHBhdGggZD0iTTU0LjUgMGgxNy41Ii8+PHBhdGggZD0iTTU0LjUgN2gxNy41Ii8+PHBhdGggZD0iTTU0LjUgNTZoMTcuNSIvPjxwYXRoIGQ9Ik01NS41NiA0Mi4yM2w0Ljk5IDUuMjIgMi44NS0yLjg2IDMuMDMgMy4xNyAxLjg4LTIuNTIyIDIuOCAyLjYxIDIuNTItNC42MS0yLjU5LTIuNDUyLTMuMzUyIDEuOS0yLjQyMiAzLjQyLTIuNDEtMi4zOTItMi4xNzQtLjYwNS0yLjY3IDIuMDciLz48cGF0aCBkPSJNMzYgMGgxNyIvPjxwYXRoIGQ9Ik0zNiAxMGgxNyIvPjxwYXRoIGQ9Ik0zNiAzN2gxNyIvPjxwYXRoIGQ9Ik0zNiA0N2gxNyIvPjwvZz48L3N2Zz4=",
+        "sizes": "512x512",
+        "type": "image/svg+xml"
+      }
+    ]
+  }
+  
