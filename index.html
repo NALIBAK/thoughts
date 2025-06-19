@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ThoughtFlow - Colorweave Thought Garden</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --background: #f8f9fc;
+      --foreground: #0f1011;
+      --card: #ffffff;
+      --card-foreground: #0f1011;
+      --primary: #c084fc;
+      --primary-foreground: #f8fafc;
+      --secondary: #f1f2f6;
+      --secondary-foreground: #1a1c20;
+      --muted: #f1f2f6;
+      --muted-foreground: #71727a;
+      --accent: #f3e8ff;
+      --accent-foreground: #1a1c20;
+      --destructive: #ef4444;
+      --destructive-foreground: #f8fafc;
+      --border: #e2e4e9;
+      --input: #e2e4e9;
+      --ring: #c084fc;
+      --radius: 0.75rem;
+      
+      /* Category colors */
+      --emotions-light: #d8b4fe;
+      --emotions: #a855f7;
+      --events-light: #93c5fd;
+      --events: #3b82f6;
+      --ideas-light: #86efac;
+      --ideas: #22c55e;
+      --goals-light: #fdba74;
+      --goals: #f97316;
+      --memories-light: #fde047;
+      --memories: #eab308;
+      --general-light: #f9a8d4;
+      --general: #ec4899;
+    }
+
+    .dark {
+      --background: #0f1011;
+      --foreground: #f8f9fc;
+      --card: #0f1011;
+      --card-foreground: #f8f9fc;
+      --primary: #a855f7;
+      --primary-foreground: #f8fafc;
+      --secondary: #27282e;
+      --secondary-foreground: #f8f9fc;
+      --muted: #27282e;
+      --muted-foreground: #a5a6ad;
+      --accent: #27282e;
+      --accent-foreground: #f8f9fc;
+      --destructive: #7f1d1d;
+      --destructive-foreground: #f8fafc;
+      --border: #27282e;
+      --input: #27282e;
+      --ring: #a855f7;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--background);
+      color: var(--foreground);
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 16rem;
+      background-color: var(--background);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .sidebar-header h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      margin-bottom: 0.5rem;
+      font-weight: 400;
+      transition: background-color 0.2s;
+    }
+
+    .nav-item:hover {
+      background-color: var(--accent);
+    }
+
+    .nav-item.active {
+      background-color: var(--accent);
+      font-weight: 500;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 1.5rem;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .header-title {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header-title h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .header-title p {
+      color: var(--muted-foreground);
+      font-size: 0.875rem;
+    }
+
+    .card {
+      background-color: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .editor-card {
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+
+    .diary-editor {
+      width: 100%;
+      min-height: 200px;
+      border: none;
+      outline: none;
+      resize: none;
+      font-family: 'Merriweather', serif;
+      font-size: 1.125rem;
+      line-height: 1.7;
+      background-color: transparent;
+      color: var(--foreground);
+    }
+
+    .editor-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+    }
+
+    .editor-typing {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.75rem;
+      font-size: 0.75rem;
+      color: var(--muted-foreground);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .editor-typing.visible {
+      opacity: 1;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      border-radius: var(--radius);
+      font-weight: 500;
+      font-size: 0.875rem;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s, opacity 0.2s;
+    }
+
+    .button-primary {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+      border: none;
+    }
+
+    .button-primary:hover {
+      background-color: var(--primary);
+      opacity: 0.9;
+    }
+
+    .button-secondary {
+      background-color: var(--secondary);
+      color: var(--secondary-foreground);
+      border: none;
+    }
+
+    .button-secondary:hover {
+      background-color: var(--secondary);
+      opacity: 0.8;
+    }
+
+    .button-destructive {
+      background-color: var(--destructive);
+      color: var(--destructive-foreground);
+      border: none;
+    }
+
+    .button-destructive:hover {
+      background-color: var(--destructive);
+      opacity: 0.9;
+    }
+
+    .button-ghost {
+      background-color: transparent;
+      color: var(--foreground);
+      border: none;
+    }
+
+    .button-ghost:hover {
+      background-color: var(--accent);
+    }
+
+    .button-icon {
+      padding: 0.5rem;
+      border-radius: var(--radius);
+    }
+
+    .select-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .select {
+      appearance: none;
+      background-color: var(--background);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.5rem 2rem 0.5rem 0.75rem;
+      font-size: 0.875rem;
+      cursor: pointer;
+      color: var(--foreground);
+    }
+
+    .select-arrow {
+      position: absolute;
+      right: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .date-picker {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background-color: var(--background);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem;
+      cursor: pointer;
+      color: var(--foreground);
+    }
+
+    .thought-string-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding: 1.5rem 0;
+    }
+
+    .thought-string {
+      height: 0.75rem;
+      border-radius: 9999px;
+      opacity: 0.8;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .thought-string:hover {
+      opacity: 1;
+    }
+
+    .thought-item {
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+
+    .thought-actions {
+      display: flex;
+      gap: 0.25rem;
+      margin-left: 0.5rem;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .thought-item:hover .thought-actions {
+      opacity: 1;
+    }
+
+    .action-button {
+      padding: 0.25rem;
+      border-radius: var(--radius);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .action-button:hover {
+      background-color: var(--accent);
+    }
+
+    .action-button.delete:hover {
+      color: var(--destructive);
+    }
+
+    /* Width classes for thought strings */
+    .w-16 { width: 4rem; }
+    .w-24 { width: 6rem; }
+    .w-32 { width: 8rem; }
+    .w-48 { width: 12rem; }
+    .w-64 { width: 16rem; }
+
+    /* Category colors */
+    .category-emotions {
+      background: linear-gradient(to right, var(--emotions-light), var(--emotions));
+    }
+
+    .category-events {
+      background: linear-gradient(to right, var(--events-light), var(--events));
+    }
+
+    .category-ideas {
+      background: linear-gradient(to right, var(--ideas-light), var(--ideas));
+    }
+
+    .category-goals {
+      background: linear-gradient(to right, var(--goals-light), var(--goals));
+    }
+
+    .category-memories {
+      background: linear-gradient(to right, var(--memories-light), var(--memories));
+    }
+
+    .category-general {
+      background: linear-gradient(to right, var(--general-light), var(--general));
+    }
+
+    /* Flow animation classes */
+    .flow-1 { animation-delay: 0s; }
+    .flow-2 { animation-delay: 0.2s; }
+    .flow-3 { animation-delay: 0.4s; }
+    .flow-4 { animation-delay: 0.6s; }
+    .flow-5 { animation-delay: 0.8s; }
+
+    /* Calendar styles */
+    .calendar-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.5rem;
+    }
+
+    .calendar-header {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .calendar-day-header {
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--muted-foreground);
+    }
+
+    .calendar-day {
+      aspect-ratio: 1/1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .calendar-day:hover {
+      background-color: var(--accent);
+    }
+
+    .calendar-day.selected {
+      background-color: var(--primary);
+      color: var(--primary-foreground);
+    }
+
+    .calendar-day.has-entries::after {
+      content: '';
+      position: absolute;
+      bottom: 0.25rem;
+      width: 0.25rem;
+      height: 0.25rem;
+      border-radius: 50%;
+      background-color: var(--primary);
+    }
+
+    .calendar-day.selected.has-entries::after {
+      background-color: var(--primary-foreground);
+    }
+
+    .calendar-day.other-month {
+      color: var(--muted-foreground);
+      opacity: 0.5;
+    }
+
+    /* Search styles */
+    .search-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .search-input-container {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 0.5rem 0.75rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      font-size: 0.875rem;
+      background-color: var(--background);
+      color: var(--foreground);
+    }
+
+    .search-results {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .search-result {
+      padding: 1rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background-color: var(--card);
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .search-result:hover {
+      border-color: var(--primary);
+    }
+
+    .search-result-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .search-result-category {
+      width: 2rem;
+      height: 0.5rem;
+      border-radius: 9999px;
+    }
+
+    .search-result-date {
+      font-size: 0.75rem;
+      color: var(--muted-foreground);
+    }
+
+    .search-result-content {
+      font-family: 'Merriweather', serif;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Dialog styles */
+    .dialog-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+
+    .dialog {
+      background-color: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      width: 100%;
+      max-width: 28rem;
+      padding: 1.5rem;
+      position: relative;
+    }
+
+    .dialog-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--muted-foreground);
+    }
+
+    .dialog-close:hover {
+      color: var(--foreground);
+    }
+
+    .dialog-header {
+      margin-bottom: 1rem;
+    }
+
+    .dialog-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+
+    .dialog-category {
+      width: 2rem;
+      height: 0.5rem;
+      border-radius: 9999px;
+    }
+
+    .dialog-date {
+      font-size: 0.75rem;
+      color: var(--muted-foreground);
+    }
+
+    .dialog-content {
+      font-family: 'Merriweather', serif;
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+    }
+
+    /* Mobile styles */
+    @media (max-width: 768px) {
+      .app {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 1rem;
+      }
+
+      .sidebar-nav {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .nav-item {
+        flex: 1;
+        justify-content: center;
+      }
+
+      .main-content {
+        padding: 1rem;
+      }
+
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      .editor-controls {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+      }
+
+      .w-64 { width: 12rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h2>ThoughtFlow</h2>
+      </div>
+      <div class="sidebar-nav">
+        <div class="nav-item active" data-view="write">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+          Today
+        </div>
+        <div class="nav-item" data-view="calendar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          Calendar
+        </div>
+        <div class="nav-item" data-view="search">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          Search
+        </div>
+      </div>
+    </div>
+    <div class="main-content">
+      <div class="header">
+        <div class="header-title">
+          <h1>ThoughtFlow</h1>
+          <p id="current-date"></p>
+        </div>
+      </div>
+      
+      <div id="view-write" class="view active">
+        <div class="card editor-card">
+          <div id="typing-indicator" class="editor-typing">Typing...</div>
+          <textarea id="diary-editor" class="diary-editor" placeholder="How are you feeling today? What's on your mind? Share your thoughts..."></textarea>
+          <div class="editor-controls">
+            <div class="left-controls">
+              <div class="select-container">
+                <select id="category-select" class="select">
+                  <option value="auto">Auto-categorize</option>
+                  <option value="emotions">Emotions</option>
+                  <option value="events">Events</option>
+                  <option value="ideas">Ideas</option>
+                  <option value="goals">Goals</option>
+                  <option value="memories">Memories</option>
+                  <option value="general">General</option>
+                </select>
+                <div class="select-arrow">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+              </div>
+              <button id="date-picker" class="date-picker">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <span id="selected-date"></span>
+              </button>
+            </div>
+            <div class="right-controls">
+              <button id="cancel-edit" class="button button-secondary" style="display: none;">Cancel</button>
+              <button id="save-button" class="button button-primary">Save Entry</button>
+            </div>
+          </div>
+        </div>
+        
+        <div>
+          <h2 class="text-lg font-medium mb-2">Your Thought Strings</h2>
+          <div id="thought-strings" class="thought-string-container">
+            <div class="text-muted-foreground text-center w-full py-12">
+              Your thoughts will appear here as colorful strings once you save an entry.
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="view-calendar" class="view" style="display: none;">
+        <div class="calendar-container card">
+          <div class="p-4">
+            <h3 class="text-lg font-medium mb-4">Select a Date</h3>
+            <div id="calendar-header" class="calendar-header"></div>
+            <div id="calendar" class="calendar"></div>
+          </div>
+        </div>
+        
+        <div class="mt-6">
+          <h2 class="text-lg font-medium mb-2">Thoughts on Selected Date</h2>
+          <div id="calendar-thoughts" class="thought-string-container">
+            <div class="text-muted-foreground text-center w-full py-12">
+              Select a date with entries to view thoughts from that day.
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div id="view-search" class="view" style="display: none;">
+        <div class="search-container">
+          <div class="search-input-container">
+            <input type="text" id="search-input" class="search-input" placeholder="Search your thoughts...">
+            <button id="search-button" class="button button-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              Search
+            </button>
+          </div>
+          
+          <div id="search-results" class="search-results">
+            <div class="text-muted-foreground text-center w-full py-12">
+              Enter a search term to find your thoughts.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="thought-dialog" class="dialog-overlay" style="display: none;">
+    <div class="dialog">
+      <button id="dialog-close" class="dialog-close">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+      <div class="dialog-header">
+        <div class="dialog-title">
+          <div id="dialog-category" class="dialog-category"></div>
+          <span id="dialog-title">Thought</span>
+        </div>
+        <div id="dialog-date" class="dialog-date"></div>
+      </div>
+      <div id="dialog-content" class="dialog-content"></div>
+      <div class="dialog-actions">
+        <button id="dialog-edit" class="button button-secondary">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+          Edit
+        </button>
+        <button id="dialog-delete" class="button button-destructive">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Utility functions
+    function generateId() {
+      return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+    }
+
+    function formatDate(date, format) {
+      const day = date.getDate();
+      const month = date.getMonth();
+      const year = date.getFullYear();
+      const hours = date.getHours();
+      const minutes = date.getMinutes();
+      
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      
+      const padZero = (num) => num.toString().padStart(2, '0');
+      
+      const formats = {
+        'yyyy-MM-dd': `${year}-${padZero(month + 1)}-${padZero(day)}`,
+        'MMMM d, yyyy': `${monthNames[month]} ${day}, ${year}`,
+        'MMM d, yyyy': `${monthNames[month].substr(0, 3)} ${day}, ${year}`,
+        'EEEE, MMMM d, yyyy': `${dayNames[date.getDay()]}, ${monthNames[month]} ${day}, ${year}`,
+        'h:mm a': `${hours % 12 || 12}:${padZero(minutes)} ${hours >= 12 ? 'PM' : 'AM'}`
+      };
+      
+      return formats[format] || '';
+    }
+
+    function categorizeThoughts(content) {
+      const categories = [
+        { name: 'emotions', keywords: ['feel', 'feeling', 'emotion', 'sad', 'happy', 'angry', 'joy', 'love', 'fear', 'anxiety'] },
+        { name: 'events', keywords: ['happened', 'went', 'visited', 'attended', 'meeting', 'party', 'trip'] },
+        { name: 'ideas', keywords: ['think', 'thought', 'idea', 'concept', 'inspiration', 'create', 'design'] },
+        { name: 'goals', keywords: ['goal', 'plan', 'future', 'achieve', 'success', 'target', 'aim', 'dream'] },
+        { name: 'memories', keywords: ['remember', 'remembered', 'childhood', 'past', 'memory', 'reminds', 'nostalgic'] },
+      ];
+      
+      const lowerContent = content.toLowerCase();
+      
+      for (const category of categories) {
+        if (category.keywords.some(keyword => lowerContent.includes(keyword))) {
+          return category.name;
+        }
+      }
+      
+      return 'general';
+    }
+
+    function getContentLengthCategory(content) {
+      const length = content.length;
+      
+      if (length < 50) return 'xs';
+      if (length < 100) return 'sm';
+      if (length < 200) return 'md';
+      if (length < 400) return 'lg';
+      return 'xl';
+    }
+
+    // State management
+    let currentView = 'write';
+    let entries = {};
+    let selectedThought = null;
+    let editingThought = null;
+    let selectedDate = new Date();
+    let editorDate = new Date();
+
+    // DOM elements
+    const currentDateEl = document.getElementById('current-date');
+    const diaryEditor = document.getElementById('diary-editor');
+    const typingIndicator = document.getElementById('typing-indicator');
+    const categorySelect = document.getElementById('category-select');
+    const datePicker = document.getElementById('date-picker');
+    const selectedDateEl = document.getElementById('selected-date');
+    const saveButton = document.getElementById('save-button');
+    const cancelEditButton = document.getElementById('cancel-edit');
+    const thoughtStrings = document.getElementById('thought-strings');
+    const calendarThoughts = document.getElementById('calendar-thoughts');
+    const calendarEl = document.getElementById('calendar');
+    const calendarHeaderEl = document.getElementById('calendar-header');
+    const searchInput = document.getElementById('search-input');
+    const searchButton = document.getElementById('search-button');
+    const searchResults = document.getElementById('search-results');
+    const thoughtDialog = document.getElementById('thought-dialog');
+    const dialogClose = document.getElementById('dialog-close');
+    const dialogCategory = document.getElementById('dialog-category');
+    const dialogTitle = document.getElementById('dialog-title');
+    const dialogDate = document.getElementById('dialog-date');
+    const dialogContent = document.getElementById('dialog-content');
+    const dialogEdit = document.getElementById('dialog-edit');
+    const dialogDelete = document.getElementById('dialog-delete');
+    const navItems = document.querySelectorAll('.nav-item');
+    const views = document.querySelectorAll('.view');
+
+    // Initialize the app
+    function initApp() {
+      // Set current date
+      currentDateEl.textContent = formatDate(new Date(), 'EEEE, MMMM d, yyyy');
+      selectedDateEl.textContent = formatDate(editorDate, 'MMM d, yyyy');
+      
+      // Load entries from localStorage
+      loadEntriesFromStorage();
+      
+      // Initialize calendar
+      renderCalendar();
+      
+      // Render thoughts for current view
+      renderThoughts();
+      
+      // Set up event listeners
+      setupEventListeners();
+    }
+
+    // Load entries from localStorage
+    function loadEntriesFromStorage() {
+      try {
+        const savedEntries = localStorage.getItem('diaryEntries');
+        if (savedEntries) {
+          const parsed = JSON.parse(savedEntries);
+          
+          // Convert date strings back to Date objects
+          Object.keys(parsed).forEach(dateKey => {
+            parsed[dateKey] = parsed[dateKey].map(thought => ({
+              ...thought,
+              date: new Date(thought.date)
+            }));
+          });
+          
+          entries = parsed;
+        }
+      } catch (error) {
+        console.error('Failed to load entries from localStorage:', error);
+      }
+    }
+
+    // Save entries to localStorage
+    function saveEntriesToStorage() {
+      try {
+        localStorage.setItem('diaryEntries', JSON.stringify(entries));
+      } catch (error) {
+        console.error('Failed to save entries to localStorage:', error);
+      }
+    }
+
+    // Set up event listeners
+    function setupEventListeners() {
+      // Navigation
+      navItems.forEach(item => {
+        item.addEventListener('click', () => {
+          const view = item.getAttribute('data-view');
+          setCurrentView(view);
+        });
+      });
+      
+      // Typing indicator
+      let typingTimeout;
+      diaryEditor.addEventListener('input', () => {
+        typingIndicator.classList.add('visible');
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => {
+          typingIndicator.classList.remove('visible');
+        }, 1000);
+      });
+      
+      // Save button
+      saveButton.addEventListener('click', handleSaveEntry);
+      
+      // Cancel edit button
+      cancelEditButton.addEventListener('click', () => {
+        editingThought = null;
+        diaryEditor.value = '';
+        categorySelect.value = 'auto';
+        cancelEditButton.style.display = 'none';
+        saveButton.textContent = 'Save Entry';
+      });
+      
+      // Date picker (simplified for this example)
+      datePicker.addEventListener('click', () => {
+        // In a real implementation, this would show a date picker
+        // For simplicity, we'll just use today's date
+        editorDate = new Date();
+        selectedDateEl.textContent = formatDate(editorDate, 'MMM d, yyyy');
+      });
+      
+      // Dialog close
+      dialogClose.addEventListener('click', () => {
+        thoughtDialog.style.display = 'none';
+      });
+      
+      // Dialog edit
+      dialogEdit.addEventListener('click', () => {
+        if (selectedThought) {
+          handleEditThought(selectedThought);
+          thoughtDialog.style.display = 'none';
+        }
+      });
+      
+      // Dialog delete
+      dialogDelete.addEventListener('click', () => {
+        if (selectedThought) {
+          handleDeleteThought(selectedThought);
+          thoughtDialog.style.display = 'none';
+        }
+      });
+      
+      // Search button
+      searchButton.addEventListener('click', handleSearch);
+      searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          handleSearch();
+        }
+      });
+    }
+
+    // Set current view
+    function setCurrentView(view) {
+      currentView = view;
+      
+      // Update navigation
+      navItems.forEach(item => {
+        if (item.getAttribute('data-view') === view) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+      
+      // Update views
+      views.forEach(viewEl => {
+        if (viewEl.id === `view-${view}`) {
+          viewEl.style.display = 'block';
+        } else {
+          viewEl.style.display = 'none';
+        }
+      });
+      
+      // Render thoughts for current view
+      renderThoughts();
+    }
+
+    // Handle save entry
+    function handleSaveEntry() {
+      const content = diaryEditor.value.trim();
+      if (content.length === 0) {
+        alert('Please write something before saving.');
+        return;
+      }
+      
+      const userCategory = categorySelect.value === 'auto' ? null : categorySelect.value;
+      const category = userCategory || categorizeThoughts(content);
+      const targetDate = editorDate;
+      const dateKey = formatDate(targetDate, 'yyyy-MM-dd');
+      
+      if (editingThought) {
+        // Update existing thought
+        Object.keys(entries).forEach(key => {
+          entries[key] = entries[key].map(t =>
+            t.id === editingThought.id
+              ? {
+                  ...t,
+                  content,
+                  category,
+                  date: targetDate
+                }
+              : t
+          );
+        });
+        
+        const originalKey = Object.keys(entries).find(key =>
+          entries[key].some(t => t.id === editingThought.id)
+        );
+        
+        if (originalKey && originalKey !== dateKey) {
+          const moved = entries[originalKey].find(t => t.id === editingThought.id);
+          if (moved) {
+            entries[originalKey] = entries[originalKey].filter(t => t.id !== editingThought.id);
+            if (entries[originalKey].length === 0) {
+              delete entries[originalKey];
+            }
+            if (!entries[dateKey]) {
+              entries[dateKey] = [];
+            }
+            entries[dateKey] = [moved, ...entries[dateKey]];
+          }
+        }
+        
+        editingThought = null;
+        cancelEditButton.style.display = 'none';
+        saveButton.textContent = 'Save Entry';
+      } else {
+        // Create new thought
+        const newThought = {
+          id: generateId(),
+          content,
+          category,
+          date: targetDate,
+          length: getContentLengthCategory(content)
+        };
+        
+        if (!entries[dateKey]) {
+          entries[dateKey] = [];
+        }
+        entries[dateKey] = [newThought, ...entries[dateKey]];
+      }
+      
+      // Save to localStorage
+      saveEntriesToStorage();
+      
+      // Clear editor
+      diaryEditor.value = '';
+      categorySelect.value = 'auto';
+      
+      // Render thoughts
+      renderThoughts();
+      
+      // Update calendar
+      renderCalendar();
+      
+      // Show success message
+      alert(editingThought ? 'Entry updated!' : 'Entry saved!');
+    }
+
+    // Handle edit thought
+    function handleEditThought(thought) {
+      editingThought = thought;
+      diaryEditor.value = thought.content;
+      categorySelect.value = thought.category;
+      editorDate = new Date(thought.date);
+      selectedDateEl.textContent = formatDate(editorDate, 'MMM d, yyyy');
+      cancelEditButton.style.display = 'inline-flex';
+      saveButton.textContent = 'Update Entry';
+      setCurrentView('write');
+    }
+
+    // Handle delete thought
+    function handleDeleteThought(thought) {
+      const dateKey = formatDate(thought.date, 'yyyy-MM-dd');
+      if (entries[dateKey]) {
+        entries[dateKey] = entries[dateKey].filter(t => t.id !== thought.id);
+        if (entries[dateKey].length === 0) {
+          delete entries[dateKey];
+        }
+      }
+      
+      if (selectedThought?.id === thought.id) {
+        selectedThought = null;
+      }
+      
+      if (editingThought?.id === thought.id) {
+        editingThought = null;
+        diaryEditor.value = '';
+        categorySelect.value = 'auto';
+        cancelEditButton.style.display = 'none';
+        saveButton.textContent = 'Save Entry';
+      }
+      
+      // Save to localStorage
+      saveEntriesToStorage();
+      
+      // Render thoughts
+      renderThoughts();
+      
+      // Update calendar
+      renderCalendar();
+    }
+
+    // Handle thought click
+    function handleThoughtClick(thought) {
+      selectedThought = thought;
+      
+      // Update dialog content
+      dialogCategory.className = 'dialog-category';
+      dialogCategory.classList.add(`category-${thought.category}`);
+      
+      const categoryLabels = {
+        emotions: 'Emotions',
+        events: 'Events',
+        ideas: 'Ideas',
+        goals: 'Goals',
+        memories: 'Memories',
+        general: 'General',
+      };
+      
+      dialogTitle.textContent = `${categoryLabels[thought.category] || 'Thought'} • ${formatDate(thought.date, 'MMM d, yyyy')}`;
+      dialogDate.textContent = formatDate(thought.date, 'h:mm a');
+      dialogContent.textContent = thought.content;
+      
+      // Show dialog
+      thoughtDialog.style.display = 'flex';
+    }
+
+    // Handle search
+    function handleSearch() {
+      const searchTerm = searchInput.value.trim().toLowerCase();
+      if (searchTerm.length === 0) {
+        searchResults.innerHTML = `
+          <div class="text-muted-foreground text-center w-full py-12">
+            Enter a search term to find your thoughts.
+          </div>
+        `;
+        return;
+      }
+      
+      const results = [];
+      
+      Object.keys(entries).forEach(dateKey => {
+        entries[dateKey].forEach(thought => {
+          if (thought.content.toLowerCase().includes(searchTerm)) {
+            results.push(thought);
+          }
+        });
+      });
+      
+      if (results.length === 0) {
+        searchResults.innerHTML = `
+          <div class="text-muted-foreground text-center w-full py-12">
+            No results found for "${searchTerm}".
+          </div>
+        `;
+        return;
+      }
+      
+      // Sort results by date (newest first)
+      results.sort((a, b) => new Date(b.date) - new Date(a.date));
+      
+      // Render results
+      searchResults.innerHTML = results.map(thought => `
+        <div class="search-result" data-id="${thought.id}">
+          <div class="search-result-header">
+            <div class="search-result-category category-${thought.category}"></div>
+            <div class="search-result-date">${formatDate(thought.date, 'MMM d, yyyy')} at ${formatDate(thought.date, 'h:mm a')}</div>
+          </div>
+          <div class="search-result-content">${thought.content}</div>
+        </div>
+      `).join('');
+      
+      // Add event listeners to results
+      document.querySelectorAll('.search-result').forEach(result => {
+        result.addEventListener('click', () => {
+          const id = result.getAttribute('data-id');
+          const thought = Object.values(entries)
+            .flat()
+            .find(t => t.id === id);
+          
+          if (thought) {
+            handleThoughtClick(thought);
+          }
+        });
+      });
+    }
+
+    // Render thoughts for current view
+    function renderThoughts() {
+      let thoughtsToRender = [];
+      
+      if (currentView === 'write') {
+        const dateKey = formatDate(editorDate, 'yyyy-MM-dd');
+        thoughtsToRender = entries[dateKey] || [];
+        renderThoughtStrings(thoughtsToRender, thoughtStrings);
+      } else if (currentView === 'calendar') {
+        const dateKey = formatDate(selectedDate, 'yyyy-MM-dd');
+        thoughtsToRender = entries[dateKey] || [];
+        renderThoughtStrings(thoughtsToRender, calendarThoughts);
+      }
+    }
+
+    // Render thought strings
+    function renderThoughtStrings(thoughts, container) {
+      if (thoughts.length === 0) {
+        container.innerHTML = `
+          <div class="text-muted-foreground text-center w-full py-12">
+            Your thoughts will appear here as colorful strings once you save an entry.
+          </div>
+        `;
+        return;
+      }
+      
+      const flowClasses = ['flow-1', 'flow-2', 'flow-3', 'flow-4', 'flow-5'];
+      const lengthToWidth = {
+        xs: 'w-16',
+        sm: 'w-24',
+        md: 'w-32',
+        lg: 'w-48',
+        xl: 'w-64'
+      };
+      
+      container.innerHTML = thoughts.map((thought, index) => `
+        <div class="thought-item ${flowClasses[index % flowClasses.length]}">
+          <div 
+            class="thought-string ${lengthToWidth[thought.length]} category-${thought.category}"
+            data-id="${thought.id}"
+            title="${thought.content}"
+          ></div>
+          <div class="thought-actions">
+            <button class="action-button edit" data-id="${thought.id}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+            </button>
+            <button class="action-button delete" data-id="${thought.id}">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            </button>
+          </div>
+        </div>
+      `).join('');
+      
+      // Add event listeners
+      container.querySelectorAll('.thought-string').forEach(string => {
+        string.addEventListener('click', () => {
+          const id = string.getAttribute('data-id');
+          const thought = thoughts.find(t => t.id === id);
+          if (thought) {
+            handleThoughtClick(thought);
+          }
+        });
+      });
+      
+      container.querySelectorAll('.action-button.edit').forEach(button => {
+        button.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = button.getAttribute('data-id');
+          const thought = thoughts.find(t => t.id === id);
+          if (thought) {
+            handleEditThought(thought);
+          }
+        });
+      });
+      
+      container.querySelectorAll('.action-button.delete').forEach(button => {
+        button.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = button.getAttribute('data-id');
+          const thought = thoughts.find(t => t.id === id);
+          if (thought && confirm('Are you sure you want to delete this thought?')) {
+            handleDeleteThought(thought);
+          }
+        });
+      });
+    }
+
+    // Render calendar
+    function renderCalendar() {
+      const year = selectedDate.getFullYear();
+      const month = selectedDate.getMonth();
+      
+      const firstDay = new Date(year, month, 1);
+      const lastDay = new Date(year, month + 1, 0);
+      
+      const daysInMonth = lastDay.getDate();
+      const startingDay = firstDay.getDay(); // 0 = Sunday, 1 = Monday, etc.
+      
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      
+      // Render month and year
+      const calendarTitle = document.createElement('div');
+      calendarTitle.className = 'text-lg font-medium mb-4';
+      calendarTitle.textContent = `${monthNames[month]} ${year}`;
+      
+      // Render day headers
+      calendarHeaderEl.innerHTML = dayNames.map(day => `
+        <div class="calendar-day-header">${day}</div>
+      `).join('');
+      
+      // Render days
+      let calendarHTML = '';
+      
+      // Previous month days
+      const prevMonthDays = startingDay;
+      const prevMonth = month === 0 ? 11 : month - 1;
+      const prevMonthYear = month === 0 ? year - 1 : year;
+      const daysInPrevMonth = new Date(prevMonthYear, prevMonth + 1, 0).getDate();
+      
+      for (let i = prevMonthDays - 1; i >= 0; i--) {
+        const day = daysInPrevMonth - i;
+        const date = new Date(prevMonthYear, prevMonth, day);
+        const dateKey = formatDate(date, 'yyyy-MM-dd');
+        const hasEntries = entries[dateKey] && entries[dateKey].length > 0;
+        
+        calendarHTML += `
+          <div class="calendar-day other-month" data-date="${dateKey}">
+            ${day}
+          </div>
+        `;
+      }
+      
+      // Current month days
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month, day);
+        const dateKey = formatDate(date, 'yyyy-MM-dd');
+        const isSelected = formatDate(selectedDate, 'yyyy-MM-dd') === dateKey;
+        const hasEntries = entries[dateKey] && entries[dateKey].length > 0;
+        
+        calendarHTML += `
+          <div 
+            class="calendar-day ${isSelected ? 'selected' : ''} ${hasEntries ? 'has-entries' : ''}"
+            data-date="${dateKey}"
+          >
+            ${day}
+          </div>
+        `;
+      }
+      
+      // Next month days
+      const totalDaysShown = prevMonthDays + daysInMonth;
+      const nextMonthDays = 42 - totalDaysShown; // 6 rows of 7 days = 42
+      
+      for (let day = 1; day <= nextMonthDays; day++) {
+        const date = new Date(year, month + 1, day);
+        const dateKey = formatDate(date, 'yyyy-MM-dd');
+        
+        calendarHTML += `
+          <div class="calendar-day other-month" data-date="${dateKey}">
+            ${day}
+          </div>
+        `;
+      }
+      
+      calendarEl.innerHTML = calendarHTML;
+      
+      // Add event listeners to days
+      calendarEl.querySelectorAll('.calendar-day').forEach(dayEl => {
+        dayEl.addEventListener('click', () => {
+          const dateKey = dayEl.getAttribute('data-date');
+          if (dateKey) {
+            const [year, month, day] = dateKey.split('-').map(Number);
+            selectedDate = new Date(year, month - 1, day);
+            renderCalendar();
+            renderThoughts();
+          }
+        });
+      });
+    }
+
+    // Initialize the app
+    initApp();
+  </script>
+</body>
+</html>
